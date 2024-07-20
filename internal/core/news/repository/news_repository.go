@@ -8,7 +8,7 @@ import (
 )
 
 type NewsRepository interface {
-	GetAll() ([]model.News, error)
+	GetAll(status *string, topicID *uuid.UUID) ([]model.News, error)
 	Create(news *model.News) (*model.News, error)
 	Update(id uuid.UUID, news *model.News) (*model.News, error)
 	Find(id uuid.UUID) (*model.News, error)
@@ -30,9 +30,19 @@ func News() NewsRepository {
 	return NewNewsRepository(db.DB)
 }
 
-func (r *newsRepository) GetAll() ([]model.News, error) {
+func (r *newsRepository) GetAll(status *string, topicID *uuid.UUID) ([]model.News, error) {
 	var news []model.News
-	result := r.db.Find(&news)
+	query := r.db.Preload("Topics")
+
+	if status != nil {
+		query = query.Where("status = ?", *status)
+	}
+
+	if topicID != nil {
+		query = query.Joins("JOIN news_topics ON news.id = news_topics.news_id").Where("news_topics.topic_id = ?", *topicID)
+	}
+
+	result := query.Find(&news)
 	if result.Error != nil {
 		return nil, result.Error
 	}

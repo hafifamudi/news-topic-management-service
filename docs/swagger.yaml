@@ -1,24 +1,44 @@
 basePath: /v1/api
 definitions:
-  request.CreateNewsRequest:
+  common.NewsResource:
     properties:
       content:
         type: string
+      created_at:
+        type: string
+      id:
+        type: string
       status:
-        enum:
-        - draft
-        - published
         type: string
       title:
         type: string
-      topic_ids:
+      topics:
         items:
-          type: string
+          $ref: '#/definitions/common.TopicResource'
         type: array
-    required:
-    - content
-    - status
-    - title
+      updated_at:
+        type: string
+    type: object
+  common.SuccessWithMessageResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
+  common.TopicResource:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      news:
+        items:
+          $ref: '#/definitions/common.NewsResource'
+        type: array
+      updated_at:
+        type: string
     type: object
   request.CreateTopicRequest:
     properties:
@@ -49,38 +69,6 @@ definitions:
     required:
     - name
     type: object
-  resource.NewsResource:
-    properties:
-      content:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: string
-      status:
-        type: string
-      title:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  resource.TopicResource:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  response.SuccessWithMessageResponse:
-    properties:
-      data: {}
-      message:
-        type: string
-    type: object
 info:
   contact:
     email: hafifcyber@gmail.com
@@ -104,39 +92,20 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.SuccessWithMessageResponse'
+            allOf:
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/common.NewsResource'
+                  type: array
+              type: object
       tags:
       - News
     post:
       consumes:
       - application/json
-      description: Create a new News with the provided information
-      parameters:
-      - description: Create News
-        in: body
-        name: product
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateNewsRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.SuccessWithMessageResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/resource.NewsResource'
-              type: object
-      tags:
-      - News
-  /news/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a News with the provided News ID
+      description: Create News with the provided information
       parameters:
       - description: News ID
         format: uuid
@@ -151,17 +120,61 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/resource.NewsResource'
+                  $ref: '#/definitions/common.NewsResource'
+              type: object
+      tags:
+      - News
+  /news/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete News with the provided News ID
+      parameters:
+      - description: News ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/common.NewsResource'
+              type: object
+      tags:
+      - News
+    get:
+      consumes:
+      - application/json
+      description: Detail News with the provided information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/common.NewsResource'
               type: object
       tags:
       - News
     put:
       consumes:
       - application/json
-      description: Update an existing News with the provided information
+      description: Update existing News with the provided information
       parameters:
       - description: News ID
         format: uuid
@@ -182,27 +195,33 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/resource.NewsResource'
+                  $ref: '#/definitions/common.NewsResource'
               type: object
       tags:
       - News
-  /topics:
+  /topic/{id}:
     get:
       consumes:
       - application/json
-      description: Retrieve all Topics
+      description: Detail Topic with the provided information
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.SuccessWithMessageResponse'
+            allOf:
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/common.TopicResource'
+              type: object
       tags:
-      - Topics
+      - News
+  /topics:
     post:
       consumes:
       - application/json
@@ -221,10 +240,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/resource.TopicResource'
+                  $ref: '#/definitions/common.TopicResource'
               type: object
       tags:
       - Topics
@@ -247,10 +266,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/resource.TopicResource'
+                  $ref: '#/definitions/common.TopicResource'
               type: object
       tags:
       - Topics
@@ -278,10 +297,31 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/resource.TopicResource'
+                  $ref: '#/definitions/common.TopicResource'
+              type: object
+      tags:
+      - Topics
+  /v1/api/topics:
+    get:
+      consumes:
+      - application/json
+      description: List all topics with related topic
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/common.TopicResource'
+                  type: array
               type: object
       tags:
       - Topics

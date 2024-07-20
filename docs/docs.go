@@ -39,13 +39,28 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.SuccessWithMessageResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/common.NewsResource"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             },
             "post": {
-                "description": "Create a new News with the provided information",
+                "description": "Create News with the provided information",
                 "consumes": [
                     "application/json"
                 ],
@@ -57,13 +72,12 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "description": "Create News",
-                        "name": "product",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateNewsRequest"
-                        }
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "News ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -72,13 +86,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.SuccessWithMessageResponse"
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resource.NewsResource"
+                                            "$ref": "#/definitions/common.NewsResource"
                                         }
                                     }
                                 }
@@ -89,8 +103,40 @@ const docTemplate = `{
             }
         },
         "/news/{id}": {
+            "get": {
+                "description": "Detail News with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "News"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/common.NewsResource"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
             "put": {
-                "description": "Update an existing News with the provided information",
+                "description": "Update existing News with the provided information",
                 "consumes": [
                     "application/json"
                 ],
@@ -125,13 +171,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.SuccessWithMessageResponse"
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resource.NewsResource"
+                                            "$ref": "#/definitions/common.NewsResource"
                                         }
                                     }
                                 }
@@ -141,7 +187,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete a News with the provided News ID",
+                "description": "Delete News with the provided News ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -167,13 +213,47 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.SuccessWithMessageResponse"
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resource.NewsResource"
+                                            "$ref": "#/definitions/common.NewsResource"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/topic/{id}": {
+            "get": {
+                "description": "Detail Topic with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "News"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/common.TopicResource"
                                         }
                                     }
                                 }
@@ -184,26 +264,6 @@ const docTemplate = `{
             }
         },
         "/topics": {
-            "get": {
-                "description": "Retrieve all Topics",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Topics"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.SuccessWithMessageResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Create a new Topic with the provided information",
                 "consumes": [
@@ -232,13 +292,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.SuccessWithMessageResponse"
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resource.TopicResource"
+                                            "$ref": "#/definitions/common.TopicResource"
                                         }
                                     }
                                 }
@@ -285,13 +345,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.SuccessWithMessageResponse"
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resource.TopicResource"
+                                            "$ref": "#/definitions/common.TopicResource"
                                         }
                                     }
                                 }
@@ -327,13 +387,50 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.SuccessWithMessageResponse"
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resource.TopicResource"
+                                            "$ref": "#/definitions/common.TopicResource"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/api/topics": {
+            "get": {
+                "description": "List all topics with related topic",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Topics"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/common.TopicResource"
+                                            }
                                         }
                                     }
                                 }
@@ -345,32 +442,64 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "request.CreateNewsRequest": {
+        "common.NewsResource": {
             "type": "object",
-            "required": [
-                "content",
-                "status",
-                "title"
-            ],
             "properties": {
                 "content": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
                 "status": {
-                    "type": "string",
-                    "enum": [
-                        "draft",
-                        "published"
-                    ]
+                    "type": "string"
                 },
                 "title": {
                     "type": "string"
                 },
-                "topic_ids": {
+                "topics": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/common.TopicResource"
                     }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "common.SuccessWithMessageResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "common.TopicResource": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "news": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/common.NewsResource"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -415,55 +544,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "minLength": 3
-                }
-            }
-        },
-        "resource.NewsResource": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "resource.TopicResource": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.SuccessWithMessageResponse": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "message": {
-                    "type": "string"
                 }
             }
         }

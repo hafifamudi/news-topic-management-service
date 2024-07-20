@@ -2,13 +2,12 @@ package controller
 
 import (
 	"encoding/json"
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	errorRequest "github.com/hafifamudi/news-topic-management-service/pkg/utils/errors"
 	"github.com/hafifamudi/news-topic-management-service/pkg/utils/response"
 	errorResponse "github.com/hafifamudi/news-topic-management-service/pkg/utils/validations"
+	"net/http"
 	"news-topic-management-service/internal/core/news/request"
 	"news-topic-management-service/internal/core/news/resource"
 	"news-topic-management-service/internal/core/news/service"
@@ -46,14 +45,31 @@ func News() NewsController {
 }
 
 // ListNews @Summary Retrieve all News
-// @Description Retrieve all News items
+// @Description Retrieve all News items with optional filtering by status or topic
 // @Tags News
 // @Accept json
 // @Produce json
-// @Success 200 {object} response.SuccessWithMessageResponse
+// @Param status query string false "Filter by status"
+// @Param topicID query string false "Filter by Topic ID"
+// @Success 200 {object} common.SuccessWithMessageResponse{data=[]common.NewsResource}
 // @Router /news [get]
 func (c *newsController) ListNews(w http.ResponseWriter, r *http.Request) {
-	newsList, err := c.service.GetAll()
+	var status *string
+	if s := r.URL.Query().Get("status"); s != "" {
+		status = &s
+	}
+
+	var topicID *uuid.UUID
+	if tid := r.URL.Query().Get("topicID"); tid != "" {
+		id, err := uuid.Parse(tid)
+		if err != nil {
+			response.Error(w, http.StatusBadRequest, "Invalid Topic ID")
+			return
+		}
+		topicID = &id
+	}
+
+	newsList, err := c.service.GetAll(status, topicID)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "Error fetching News")
 		return
@@ -77,7 +93,7 @@ func (c *newsController) ListNews(w http.ResponseWriter, r *http.Request) {
 // @Tags News
 // @Accept json
 // @Produce json
-// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.NewNewsResource}
+// @Success 200 {object} common.SuccessWithMessageResponse{data=common.NewsResource}
 // @Router /news/{id} [get]
 func (c *newsController) DetailNews(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
@@ -117,7 +133,7 @@ func (c *newsController) DetailNews(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "News ID" Format(uuid)
-// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.NewsResource}
+// @Success 200 {object} common.SuccessWithMessageResponse{data=common.NewsResource}
 // @Router /news [post]
 func (c *newsController) CreateNews(w http.ResponseWriter, r *http.Request) {
 	var newsRequest request.CreateNewsRequest
@@ -149,7 +165,7 @@ func (c *newsController) CreateNews(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "News ID" Format(uuid)
 // @Param product body request.UpdateNewsRequest true "Update News"
-// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.NewsResource}
+// @Success 200 {object} common.SuccessWithMessageResponse{data=common.NewsResource}
 // @Router /news/{id} [put]
 func (c *newsController) UpdateNews(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
@@ -198,7 +214,7 @@ func (c *newsController) UpdateNews(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "News ID" Format(uuid)
-// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.NewsResource}
+// @Success 200 {object} common.SuccessWithMessageResponse{data=common.NewsResource}
 // @Router /news/{id} [delete]
 func (c *newsController) DeleteNews(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")

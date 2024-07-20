@@ -10,7 +10,7 @@ import (
 )
 
 type NewsService interface {
-	GetAll() ([]model.News, error)
+	GetAll(status *string, topicID *uuid.UUID) ([]model.News, error)
 	Create(req request.CreateNewsRequest) (*model.News, error)
 	Update(req request.UpdateNewsRequest, newsID uuid.UUID) (*model.News, error)
 	Find(newsID uuid.UUID) (*model.News, error)
@@ -138,8 +138,8 @@ func (n newsService) Delete(newsID uuid.UUID) (*model.News, error) {
 	return deletedNews, nil
 }
 
-func (n newsService) GetAll() ([]model.News, error) {
-	data, err := n.NewsRepository.GetAll()
+func (n newsService) GetAll(status *string, topicID *uuid.UUID) ([]model.News, error) {
+	data, err := n.NewsRepository.GetAll(status, topicID)
 	if err != nil {
 		return nil, err
 	}

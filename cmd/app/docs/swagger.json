@@ -1,0 +1,19 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This News Topic Management service API.",
+        "title": "News Topic Management API",
+        "contact": {
+            "name": "Hafif Nur Muhammad",
+            "url": "https://hafifamudi.github.io/",
+            "email": "hafifcyber@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/v1/api",
+    "paths": {}
+}

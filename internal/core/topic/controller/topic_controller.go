@@ -42,7 +42,7 @@ func Topic() TopicController {
 // @Tags Topics
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} response.SuccessWithMessageResponse{data=[]resource.TopicResource}
+// @Success 200 {object} common.SuccessWithMessageResponse{data=[]common.TopicResource}
 // @Router /v1/api/topics [get]
 func (c *topicController) ListTopic(w http.ResponseWriter, r *http.Request) {
 	topicList, err := c.service.GetAll()
@@ -69,7 +69,7 @@ func (c *topicController) ListTopic(w http.ResponseWriter, r *http.Request) {
 // @Tags News
 // @Accept json
 // @Produce json
-// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.NewTopicResource}
+// @Success 200 {object} common.SuccessWithMessageResponse{data=common.TopicResource}
 // @Router /topic/{id} [get]
 func (c *topicController) DetailTopic(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
@@ -109,7 +109,7 @@ func (c *topicController) DetailTopic(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param topic body request.CreateTopicRequest true "Create Topic"
-// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.TopicResource}
+// @Success 200 {object} common.SuccessWithMessageResponse{data=common.TopicResource}
 // @Router /topics [post]
 func (c *topicController) CreateTopic(w http.ResponseWriter, r *http.Request) {
 	var topicRequest request.CreateTopicRequest
@@ -141,7 +141,7 @@ func (c *topicController) CreateTopic(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "Topic ID" Format(uuid)
 // @Param topic body request.UpdateTopicRequest true "Update Topic"
-// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.TopicResource}
+// @Success 200 {object} common.SuccessWithMessageResponse{data=common.TopicResource}
 // @Router /topics/{id} [put]
 func (c *topicController) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
@@ -190,7 +190,7 @@ func (c *topicController) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Topic ID" Format(uuid)
-// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.TopicResource}
+// @Success 200 {object} common.SuccessWithMessageResponse{data=common.TopicResource}
 // @Router /topics/{id} [delete]
 func (c *topicController) DeleteTopic(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
