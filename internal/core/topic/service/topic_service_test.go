@@ -2,12 +2,12 @@ package service_test
 
 import (
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/model"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/request"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/service"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/mocks"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
 	"github.com/stretchr/testify/assert"
+	"news-topic-management-service/internal/core/topic/model"
+	"news-topic-management-service/internal/core/topic/request"
+	"news-topic-management-service/internal/core/topic/service"
+	"news-topic-management-service/internal/general/mocks"
+	"news-topic-management-service/internal/general/model/common"
 	"testing"
 )
 
@@ -45,7 +45,6 @@ func TestUpdate(t *testing.T) {
 		Update(topicID, existingTopic).
 		Return(updatedTopic, nil)
 
-	// Create the TopicService with the mocks
 	svc := service.NewTopicService(mockTopicRepo)
 
 	result, err := svc.Update(updateReq, topicID)
@@ -64,7 +63,6 @@ func TestFind(t *testing.T) {
 		Find(topicID).
 		Return(expectedTopic, nil)
 
-	// Create the TopicService with the mocks
 	svc := service.NewTopicService(mockTopicRepo)
 
 	result, err := svc.Find(topicID)
@@ -87,7 +85,6 @@ func TestDelete(t *testing.T) {
 		Delete(topicID).
 		Return(expectedTopic, nil)
 
-	// Create the TopicService with the mocks
 	svc := service.NewTopicService(mockTopicRepo)
 
 	result, err := svc.Delete(topicID)
@@ -108,7 +105,6 @@ func TestGetAll(t *testing.T) {
 		GetAll().
 		Return(expectedTopics, nil)
 
-	// Create the TopicService with the mocks
 	svc := service.NewTopicService(mockTopicRepo)
 
 	result, err := svc.GetAll()
@@ -127,7 +123,6 @@ func TestPreload(t *testing.T) {
 		Preload(topic).
 		Return(preloadedTopic, nil)
 
-	// Create the TopicService with the mocks
 	svc := service.NewTopicService(mockTopicRepo)
 
 	result, err := svc.Preload(topic)

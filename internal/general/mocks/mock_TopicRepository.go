@@ -3,10 +3,11 @@
 package mocks
 
 import (
-	common "github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
+	common "news-topic-management-service/internal/general/model/common"
+
 	mock "github.com/stretchr/testify/mock"
 
-	model "github.com/hafifamudi/news-topic-management-service/internal/core/topic/model"
+	model "news-topic-management-service/internal/core/topic/model"
 
 	uuid "github.com/google/uuid"
 )

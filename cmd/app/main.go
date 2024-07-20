@@ -93,7 +93,7 @@ func main() {
 	topicRoute.Register(v1Router)
 	newsRoute.Register(v1Router)
 
-	// Mount the versioned router
+	/** Mount the versioned router */
 	app.Mount("/v1/api", v1Router)
 
 	log.Println("Server is starting on port 3333")

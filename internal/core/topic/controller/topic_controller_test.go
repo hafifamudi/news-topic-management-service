@@ -3,19 +3,19 @@ package controller_test
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/request"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/resource"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
 	"net/http"
 	"net/http/httptest"
+	"news-topic-management-service/internal/core/topic/request"
+	"news-topic-management-service/internal/core/topic/resource"
+	"news-topic-management-service/internal/general/model/common"
 	"testing"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/controller"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/model"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/mocks"
 	"github.com/stretchr/testify/assert"
+	"news-topic-management-service/internal/core/topic/controller"
+	"news-topic-management-service/internal/core/topic/model"
+	"news-topic-management-service/internal/general/mocks"
 )
 
 func TestListTopic(t *testing.T) {

@@ -2,12 +2,12 @@ package repository_test
 
 import (
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/model"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/repository"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"news-topic-management-service/internal/core/topic/model"
+	"news-topic-management-service/internal/core/topic/repository"
+	"news-topic-management-service/internal/general/model/common"
 	"testing"
 )
 
@@ -17,7 +17,6 @@ func setupTestDB(t *testing.T) (*gorm.DB, repository.TopicRepository) {
 		t.Fatalf("failed to connect database: %v", err)
 	}
 
-	// AutoMigrate your models
 	err = db.AutoMigrate(&model.Topic{})
 	if err != nil {
 		t.Fatalf("failed to migrate database: %v", err)
@@ -49,7 +48,6 @@ func TestTopicRepository_Delete(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, topic.ID, deletedTopic.ID)
 
-	// Verify that the topic has been deleted
 	_, err = repo.Find(topic.ID)
 	assert.Error(t, err)
 }
@@ -71,7 +69,6 @@ func TestTopicRepository_Find(t *testing.T) {
 func TestTopicRepository_GetAll(t *testing.T) {
 	_, repo := setupTestDB(t)
 
-	// Create topics in the database
 	topics := []model.Topic{
 		{ID: uuid.New(), Name: "Topic 1"},
 		{ID: uuid.New(), Name: "Topic 2"},
@@ -83,11 +80,9 @@ func TestTopicRepository_GetAll(t *testing.T) {
 		}
 	}
 
-	// Retrieve all topics from the database
 	allTopics, err := repo.GetAll()
 	assert.NoError(t, err)
 
-	// Check that the number of topics is as expected
 	assert.Len(t, allTopics, len(topics))
 
 	// Compare topics by ID and Name only

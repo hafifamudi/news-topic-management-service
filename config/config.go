@@ -6,7 +6,7 @@ import (
 )
 
 type App struct {
-	Name string `default:"news_topic_management" env:"APP_NAME"`
+	Name string `default:"news_topic_management_service" env:"APP_NAME"`
 	Env  string `default:"local" env:"APP_ENV"`
 }
 

@@ -3,20 +3,20 @@ package controller_test
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
+	"news-topic-management-service/internal/general/model/common"
 	"testing"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/controller"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/model"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/request"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/resource"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/mocks"
 	"github.com/stretchr/testify/assert"
+	"news-topic-management-service/internal/core/news/controller"
+	"news-topic-management-service/internal/core/news/model"
+	"news-topic-management-service/internal/core/news/request"
+	"news-topic-management-service/internal/core/news/resource"
+	"news-topic-management-service/internal/general/mocks"
 )
 
 func TestDetailNews(t *testing.T) {

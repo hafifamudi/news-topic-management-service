@@ -2,12 +2,12 @@ package service_test
 
 import (
 	"github.com/google/uuid"
-	newsModel "github.com/hafifamudi/news-topic-management-service/internal/core/news/model"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/request"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/service"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/mocks"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
 	"github.com/stretchr/testify/assert"
+	newsModel "news-topic-management-service/internal/core/news/model"
+	"news-topic-management-service/internal/core/news/request"
+	"news-topic-management-service/internal/core/news/service"
+	"news-topic-management-service/internal/general/mocks"
+	"news-topic-management-service/internal/general/model/common"
 	"testing"
 )
 
@@ -30,12 +30,10 @@ func TestCreate(t *testing.T) {
 		Topics:  []common.Topic{*topic},
 	}
 
-	// Define expectations for TopicRepository mock
 	mockTopicRepo.EXPECT().
 		Find(topicID).
 		Return(topic, nil)
 
-	// Define expectations for NewsRepository mock
 	mockNewsRepo.EXPECT().
 		Create(&newsModel.News{
 			Title:   createReq.Title,
@@ -45,7 +43,6 @@ func TestCreate(t *testing.T) {
 		}).
 		Return(expectedNews, nil)
 
-	// Create the NewsService with the mocks
 	svc := service.NewNewsService(mockNewsRepo, mockTopicRepo)
 
 	result, err := svc.Create(createReq)
@@ -87,7 +84,6 @@ func TestUpdate(t *testing.T) {
 		Update(newsID, updatedNews).
 		Return(updatedNews, nil)
 
-	// Create the NewsService with the mocks
 	svc := service.NewNewsService(mockNewsRepo, mockTopicRepo)
 
 	result, err := svc.Update(updateReq, newsID)
@@ -106,7 +102,6 @@ func TestFind(t *testing.T) {
 		Find(newsID).
 		Return(expectedNews, nil)
 
-	// Create the NewsService with the mocks
 	svc := service.NewNewsService(mockNewsRepo, nil)
 
 	result, err := svc.Find(newsID)
@@ -128,7 +123,6 @@ func TestDelete(t *testing.T) {
 		Delete(newsID).
 		Return(expectedNews, nil)
 
-	// Create the NewsService with the mocks
 	svc := service.NewNewsService(mockNewsRepo, nil)
 
 	result, err := svc.Delete(newsID)
@@ -146,13 +140,13 @@ func TestGetAll(t *testing.T) {
 	}
 
 	mockNewsRepo.EXPECT().
-		GetAll().
+		GetAll(nil, nil).
 		Return(expectedNewsList, nil)
 
 	// Create the NewsService with the mocks
 	svc := service.NewNewsService(mockNewsRepo, nil)
 
-	result, err := svc.GetAll()
+	result, err := svc.GetAll(nil, nil)
 
 	assert.NoError(t, err)
 	assert.Equal(t, expectedNewsList, result)
@@ -174,7 +168,6 @@ func TestPreload(t *testing.T) {
 		Preload(news).
 		Return(preloadedNews, nil)
 
-	// Create the NewsService with the mocks
 	svc := service.NewNewsService(mockNewsRepo, nil)
 
 	result, err := svc.Preload(news)

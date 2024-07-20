@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/config"
-	newsModel "github.com/hafifamudi/news-topic-management-service/internal/core/news/model"
-	topicModel "github.com/hafifamudi/news-topic-management-service/internal/core/topic/model"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
-	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/db"
 	"github.com/joho/godotenv"
 	"log"
+	"news-topic-management-service/config"
+	newsModel "news-topic-management-service/internal/core/news/model"
+	topicModel "news-topic-management-service/internal/core/topic/model"
+	"news-topic-management-service/internal/general/model/common"
+	"news-topic-management-service/pkg/infrastructure/db"
 )
 
 func main() {

@@ -3,8 +3,9 @@
 package mocks
 
 import (
-	model "github.com/hafifamudi/news-topic-management-service/internal/core/news/model"
-	request "github.com/hafifamudi/news-topic-management-service/internal/core/news/request"
+	model "news-topic-management-service/internal/core/news/model"
+	request "news-topic-management-service/internal/core/news/request"
+
 	mock "github.com/stretchr/testify/mock"
 
 	uuid "github.com/google/uuid"
@@ -197,9 +198,9 @@ func (_c *MockNewsService_Find_Call) RunAndReturn(run func(uuid.UUID) (*model.Ne
 	return _c
 }
 
-// GetAll provides a mock function with given fields:
-func (_m *MockNewsService) GetAll() ([]model.News, error) {
-	ret := _m.Called()
+// GetAll provides a mock function with given fields: status, topicID
+func (_m *MockNewsService) GetAll(status *string, topicID *uuid.UUID) ([]model.News, error) {
+	ret := _m.Called(status, topicID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAll")
@@ -207,19 +208,19 @@ func (_m *MockNewsService) GetAll() ([]model.News, error) {
 
 	var r0 []model.News
 	var r1 error
-	if rf, ok := ret.Get(0).(func() ([]model.News, error)); ok {
-		return rf()
+	if rf, ok := ret.Get(0).(func(*string, *uuid.UUID) ([]model.News, error)); ok {
+		return rf(status, topicID)
 	}
-	if rf, ok := ret.Get(0).(func() []model.News); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(*string, *uuid.UUID) []model.News); ok {
+		r0 = rf(status, topicID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]model.News)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(*string, *uuid.UUID) error); ok {
+		r1 = rf(status, topicID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -233,13 +234,15 @@ type MockNewsService_GetAll_Call struct {
 }
 
 // GetAll is a helper method to define mock.On call
-func (_e *MockNewsService_Expecter) GetAll() *MockNewsService_GetAll_Call {
-	return &MockNewsService_GetAll_Call{Call: _e.mock.On("GetAll")}
+//   - status *string
+//   - topicID *uuid.UUID
+func (_e *MockNewsService_Expecter) GetAll(status interface{}, topicID interface{}) *MockNewsService_GetAll_Call {
+	return &MockNewsService_GetAll_Call{Call: _e.mock.On("GetAll", status, topicID)}
 }
 
-func (_c *MockNewsService_GetAll_Call) Run(run func()) *MockNewsService_GetAll_Call {
+func (_c *MockNewsService_GetAll_Call) Run(run func(status *string, topicID *uuid.UUID)) *MockNewsService_GetAll_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run()
+		run(args[0].(*string), args[1].(*uuid.UUID))
 	})
 	return _c
 }
@@ -249,7 +252,7 @@ func (_c *MockNewsService_GetAll_Call) Return(_a0 []model.News, _a1 error) *Mock
 	return _c
 }
 
-func (_c *MockNewsService_GetAll_Call) RunAndReturn(run func() ([]model.News, error)) *MockNewsService_GetAll_Call {
+func (_c *MockNewsService_GetAll_Call) RunAndReturn(run func(*string, *uuid.UUID) ([]model.News, error)) *MockNewsService_GetAll_Call {
 	_c.Call.Return(run)
 	return _c
 }
