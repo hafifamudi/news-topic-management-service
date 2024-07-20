@@ -1,6 +1,6 @@
 module github.com/hafifamudi/news-topic-management-service
 
-go 1.21.3
+go 1.21
 
 require (
 	github.com/go-chi/chi/v5 v5.1.0

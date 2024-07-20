@@ -1,5 +1,5 @@
 # Use the official Golang image as a build stage
-FROM golang:1.21.3-alpine AS build
+FROM golang:1.21-alpine AS build
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -12,6 +12,12 @@ RUN go mod download
 
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
+
+# Set GO111MODULE environment variable to enable Go modules
+ENV GO111MODULE=on
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV CGO_ENABLED=0
 
 # Build the Go app, specifying the entry point
 RUN go build -o main ./cmd/app/main.go
