@@ -43,7 +43,7 @@ func Topic() TopicController {
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} common.SuccessWithMessageResponse{data=[]common.TopicResource}
-// @Router /v1/api/topics [get]
+// @Router /topics [get]
 func (c *topicController) ListTopic(w http.ResponseWriter, r *http.Request) {
 	topicList, err := c.service.GetAll()
 	if err != nil {
@@ -66,11 +66,11 @@ func (c *topicController) ListTopic(w http.ResponseWriter, r *http.Request) {
 
 // DetailTopic @Summary Detail data of a Topic
 // @Description Detail Topic with the provided information
-// @Tags News
-// @Accept json
+// @Tags Topics
 // @Produce json
+// @Param id path string true "Topic ID" Format(uuid)
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.TopicResource}
-// @Router /topic/{id} [get]
+// @Router /topics/{id} [get]
 func (c *topicController) DetailTopic(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)

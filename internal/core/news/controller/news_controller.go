@@ -91,8 +91,8 @@ func (c *newsController) ListNews(w http.ResponseWriter, r *http.Request) {
 // DetailNews @Summary Detail data of a News
 // @Description Detail News with the provided information
 // @Tags News
-// @Accept json
 // @Produce json
+// @Param id path string true "News ID" Format(uuid)
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.NewsResource}
 // @Router /news/{id} [get]
 func (c *newsController) DetailNews(w http.ResponseWriter, r *http.Request) {
@@ -132,7 +132,7 @@ func (c *newsController) DetailNews(w http.ResponseWriter, r *http.Request) {
 // @Tags News
 // @Accept json
 // @Produce json
-// @Param id path string true "News ID" Format(uuid)
+// @Param CreateNewsRequest body request.CreateNewsRequest true "Create News Request"
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.NewsResource}
 // @Router /news [post]
 func (c *newsController) CreateNews(w http.ResponseWriter, r *http.Request) {

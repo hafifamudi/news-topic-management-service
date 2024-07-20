@@ -25,7 +25,7 @@ const docTemplate = `{
     "paths": {
         "/news": {
             "get": {
-                "description": "Retrieve all News items",
+                "description": "Retrieve all News items with optional filtering by status or topic",
                 "consumes": [
                     "application/json"
                 ],
@@ -34,6 +34,20 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "News"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by Topic ID",
+                        "name": "topicID",
+                        "in": "query"
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -72,12 +86,13 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "News ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "Create News Request",
+                        "name": "CreateNewsRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateNewsRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -105,14 +120,21 @@ const docTemplate = `{
         "/news/{id}": {
             "get": {
                 "description": "Detail News with the provided information",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "News"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "News ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -229,9 +251,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/topic/{id}": {
+        "/topics": {
             "get": {
-                "description": "Detail Topic with the provided information",
+                "description": "List all topics with related topic",
                 "consumes": [
                     "application/json"
                 ],
@@ -239,7 +261,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "News"
+                    "Topics"
                 ],
                 "responses": {
                     "200": {
@@ -253,7 +275,10 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/common.TopicResource"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/common.TopicResource"
+                                            }
                                         }
                                     }
                                 }
@@ -261,9 +286,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/topics": {
+            },
             "post": {
                 "description": "Create a new Topic with the provided information",
                 "consumes": [
@@ -309,6 +332,45 @@ const docTemplate = `{
             }
         },
         "/topics/{id}": {
+            "get": {
+                "description": "Detail Topic with the provided information",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Topics"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Topic ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/common.TopicResource"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "Update an existing Topic with the provided information",
                 "consumes": [
@@ -402,43 +464,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/v1/api/topics": {
-            "get": {
-                "description": "List all topics with related topic",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Topics"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/common.SuccessWithMessageResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/common.TopicResource"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -500,6 +525,35 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "request.CreateNewsRequest": {
+            "type": "object",
+            "required": [
+                "content",
+                "status",
+                "title"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "draft",
+                        "published"
+                    ]
+                },
+                "title": {
+                    "type": "string"
+                },
+                "topic_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

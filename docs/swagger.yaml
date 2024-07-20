@@ -40,6 +40,26 @@ definitions:
       updated_at:
         type: string
     type: object
+  request.CreateNewsRequest:
+    properties:
+      content:
+        type: string
+      status:
+        enum:
+        - draft
+        - published
+        type: string
+      title:
+        type: string
+      topic_ids:
+        items:
+          type: string
+        type: array
+    required:
+    - content
+    - status
+    - title
+    type: object
   request.CreateTopicRequest:
     properties:
       name:
@@ -85,7 +105,16 @@ paths:
     get:
       consumes:
       - application/json
-      description: Retrieve all News items
+      description: Retrieve all News items with optional filtering by status or topic
+      parameters:
+      - description: Filter by status
+        in: query
+        name: status
+        type: string
+      - description: Filter by Topic ID
+        in: query
+        name: topicID
+        type: string
       produces:
       - application/json
       responses:
@@ -107,12 +136,12 @@ paths:
       - application/json
       description: Create News with the provided information
       parameters:
-      - description: News ID
-        format: uuid
-        in: path
-        name: id
+      - description: Create News Request
+        in: body
+        name: CreateNewsRequest
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/request.CreateNewsRequest'
       produces:
       - application/json
       responses:
@@ -154,9 +183,14 @@ paths:
       tags:
       - News
     get:
-      consumes:
-      - application/json
       description: Detail News with the provided information
+      parameters:
+      - description: News ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -202,11 +236,11 @@ paths:
               type: object
       tags:
       - News
-  /topic/{id}:
+  /topics:
     get:
       consumes:
       - application/json
-      description: Detail Topic with the provided information
+      description: List all topics with related topic
       produces:
       - application/json
       responses:
@@ -217,11 +251,12 @@ paths:
             - $ref: '#/definitions/common.SuccessWithMessageResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/common.TopicResource'
+                  items:
+                    $ref: '#/definitions/common.TopicResource'
+                  type: array
               type: object
       tags:
-      - News
-  /topics:
+      - Topics
     post:
       consumes:
       - application/json
@@ -273,6 +308,29 @@ paths:
               type: object
       tags:
       - Topics
+    get:
+      description: Detail Topic with the provided information
+      parameters:
+      - description: Topic ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/common.TopicResource'
+              type: object
+      tags:
+      - Topics
     put:
       consumes:
       - application/json
@@ -301,27 +359,6 @@ paths:
             - properties:
                 data:
                   $ref: '#/definitions/common.TopicResource'
-              type: object
-      tags:
-      - Topics
-  /v1/api/topics:
-    get:
-      consumes:
-      - application/json
-      description: List all topics with related topic
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/common.SuccessWithMessageResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/common.TopicResource'
-                  type: array
               type: object
       tags:
       - Topics

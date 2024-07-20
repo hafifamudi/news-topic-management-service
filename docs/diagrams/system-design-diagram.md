@@ -1,7 +1,6 @@
-```mermaid
 graph TD
-    subgraph Backend
-        A[Client] -->|Request| B[News Topic Service]
+subgraph Backend
+A[Client] -->|Request| B[News Topic Service]
 
         B --> E[Database]
 
@@ -21,4 +20,4 @@ graph TD
 
     classDef service fill:#0FA60F,stroke:#333,stroke-width:2px;
     class B,E,F,G,H,I,J service;
-```
+    
