@@ -2,9 +2,9 @@ package repository
 
 import (
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/model"
 	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/db"
 	"gorm.io/gorm"
+	"news-topic-management-service/internal/core/news/model"
 )
 
 type NewsRepository interface {

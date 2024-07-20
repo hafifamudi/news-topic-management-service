@@ -1,4 +1,4 @@
-module github.com/hafifamudi/news-topic-management-service
+module news-topic-management-service
 
 go 1.21
 
@@ -6,6 +6,7 @@ require (
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/google/uuid v1.6.0
+	github.com/hafifamudi/news-topic-management-service v1.0.0
 	github.com/jinzhu/configor v1.2.2
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.9.0
@@ -38,7 +39,6 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/swaggo/files v1.0.1 // indirect
 	golang.org/x/crypto v0.25.0 // indirect

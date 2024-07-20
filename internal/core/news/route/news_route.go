@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/controller"
+	"news-topic-management-service/internal/core/news/controller"
 )
 
 func Register(r chi.Router) {

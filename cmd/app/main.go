@@ -2,15 +2,15 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/hafifamudi/news-topic-management-service/config"
-	_ "github.com/hafifamudi/news-topic-management-service/docs"
-	newsModel "github.com/hafifamudi/news-topic-management-service/internal/core/news/model"
-	newsRoute "github.com/hafifamudi/news-topic-management-service/internal/core/news/route"
-	topicModel "github.com/hafifamudi/news-topic-management-service/internal/core/topic/model"
-	topicRoute "github.com/hafifamudi/news-topic-management-service/internal/core/topic/route"
 	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/db"
 	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"news-topic-management-service/config"
+	_ "news-topic-management-service/docs"
+	newsModel "news-topic-management-service/internal/core/news/model"
+	newsRoute "news-topic-management-service/internal/core/news/route"
+	topicModel "news-topic-management-service/internal/core/topic/model"
+	topicRoute "news-topic-management-service/internal/core/topic/route"
 
 	"log"
 	"net/http"
@@ -42,7 +42,7 @@ func main() {
 	defer db.CloseDB()
 
 	/**  Initialize database */
-	db, err := db.InitDB(db.Config{
+	dbInstance, err := db.InitDB(db.Config{
 		Client:   cfg.DB.Client,
 		Database: cfg.DB.Database,
 		Username: cfg.DB.Username,
@@ -56,7 +56,7 @@ func main() {
 	}
 
 	/** Migrate the schema */
-	db.AutoMigrate(
+	dbInstance.AutoMigrate(
 		&topicModel.Topic{},
 		&newsModel.News{},
 	)

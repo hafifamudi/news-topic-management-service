@@ -29,9 +29,6 @@ $GOPATH/pkg/mod
 *.log
 *.tmp
 
-# Configuration files
-*.env
-
 # Git files
 .git
 .gitignore

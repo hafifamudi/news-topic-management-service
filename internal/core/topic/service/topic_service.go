@@ -2,10 +2,10 @@ package service
 
 import (
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/model"
-	topicRepo "github.com/hafifamudi/news-topic-management-service/internal/core/topic/repository"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/request"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
+	"news-topic-management-service/internal/core/topic/model"
+	topicRepo "news-topic-management-service/internal/core/topic/repository"
+	"news-topic-management-service/internal/core/topic/request"
+	"news-topic-management-service/internal/general/model/common"
 )
 
 type TopicService interface {

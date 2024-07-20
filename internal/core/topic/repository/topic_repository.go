@@ -2,10 +2,10 @@ package repository
 
 import (
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/model"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
 	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/db"
 	"gorm.io/gorm"
+	"news-topic-management-service/internal/core/topic/model"
+	"news-topic-management-service/internal/general/model/common"
 )
 
 type TopicRepository interface {

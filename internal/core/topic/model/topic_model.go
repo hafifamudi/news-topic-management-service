@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
+	"news-topic-management-service/internal/general/model/common"
 	"time"
 )
 

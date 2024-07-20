@@ -6,12 +6,12 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/request"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/resource"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/service"
 	errorRequest "github.com/hafifamudi/news-topic-management-service/pkg/utils/errors"
 	"github.com/hafifamudi/news-topic-management-service/pkg/utils/response"
 	errorResponse "github.com/hafifamudi/news-topic-management-service/pkg/utils/validations"
+	"news-topic-management-service/internal/core/news/request"
+	"news-topic-management-service/internal/core/news/resource"
+	"news-topic-management-service/internal/core/news/service"
 )
 
 // NewsController Swagger annotations

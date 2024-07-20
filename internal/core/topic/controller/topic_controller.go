@@ -2,17 +2,17 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/model"
 	errorRequest "github.com/hafifamudi/news-topic-management-service/pkg/utils/errors"
 	errorResponse "github.com/hafifamudi/news-topic-management-service/pkg/utils/validations"
 	"net/http"
+	"news-topic-management-service/internal/core/topic/model"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/request"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/resource"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/service"
 	"github.com/hafifamudi/news-topic-management-service/pkg/utils/response"
+	"news-topic-management-service/internal/core/topic/request"
+	"news-topic-management-service/internal/core/topic/resource"
+	"news-topic-management-service/internal/core/topic/service"
 )
 
 type TopicController interface {

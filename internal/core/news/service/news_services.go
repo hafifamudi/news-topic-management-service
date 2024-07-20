@@ -2,11 +2,11 @@ package service
 
 import (
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/model"
-	newsRepo "github.com/hafifamudi/news-topic-management-service/internal/core/news/repository"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/request"
-	topicRepo "github.com/hafifamudi/news-topic-management-service/internal/core/topic/repository"
-	"github.com/hafifamudi/news-topic-management-service/internal/general/model/common"
+	"news-topic-management-service/internal/core/news/model"
+	newsRepo "news-topic-management-service/internal/core/news/repository"
+	"news-topic-management-service/internal/core/news/request"
+	topicRepo "news-topic-management-service/internal/core/topic/repository"
+	"news-topic-management-service/internal/general/model/common"
 )
 
 type NewsService interface {

@@ -2,7 +2,7 @@ package resource
 
 import (
 	"github.com/google/uuid"
-	"github.com/hafifamudi/news-topic-management-service/internal/core/news/model"
+	"news-topic-management-service/internal/core/news/model"
 	"time"
 )
 
