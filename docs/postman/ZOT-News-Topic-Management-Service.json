@@ -22,7 +22,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Hacking News 3\",\n  \"content\": \"This is hacking news in indonesia\",\n  \"status\": \"draft\",\n  \"topic_ids\": [\n    \"5089296d-b24b-40a5-b17a-75a983a3430c\"\n  ]\n}",
+              "raw": "{\n  \"title\": \"Hacking News 151\",\n  \"content\": \"This is hacking news in indonesia\",\n  \"status\": \"published\",\n  \"topic_ids\": [\n    \"2bbc69a7-48b2-4376-87d4-418f9cb98ccb\"\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -38,7 +38,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{url_dev}}/v1/api/news/3e6e1de6-fa89-475b-8c0c-d852dfc1101c",
+              "raw": "{{url_dev}}/v1/api/news/3194fcad-0308-4ebc-aab6-324abde40c41",
               "host": [],
               "path": [],
               "query": [],
@@ -53,7 +53,7 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{url_dev}}/v1/api/news/26cf1ff3-c767-4a34-90ef-6cc25e572a53",
+              "raw": "{{url_dev}}/v1/api/news/3194fcad-0308-4ebc-aab6-324abde40c41",
               "host": [],
               "path": [],
               "query": [],
@@ -68,10 +68,19 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{url_dev}}/v1/api/news",
+              "raw": "{{url_dev}}/v1/api/news?status=draft&topicID=2bbc69a7-48b2-4376-87d4-418f9cb98ccb",
               "host": [],
               "path": [],
-              "query": [],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "draft"
+                },
+                {
+                  "key": "topicID",
+                  "value": "2bbc69a7-48b2-4376-87d4-418f9cb98ccb"
+                }
+              ],
               "variable": []
             },
             "body": {
@@ -91,7 +100,7 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{url_dev}}/v1/api/news/3e6e1de6-fa89-475b-8c0c-d852dfc1109c",
+              "raw": "{{url_dev}}/v1/api/news/5b66690c-e316-46cb-94fc-fd3f3bf885b7",
               "host": [],
               "path": [],
               "query": [],
@@ -99,7 +108,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Hacking News Update\",\n  \"content\": \"This is hacking news in indonesia\",\n  \"status\": \"draft\",\n  \"topic_ids\": [\n  \"86228aae-e3cc-43e9-b77a-fa1dc905cf6d\",\n  ]\n}",
+              "raw": "{\n  \"title\": \"Hacking News Update\",\n  \"content\": \"This is hacking news in indonesia\",\n  \"status\": \"published\",\n  \"topic_ids\": [\n    \"2bbc69a7-48b2-4376-87d4-418f9cb98ccb\"\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -128,7 +137,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\" : \"Viral\"\n}",
+              "raw": "{\n  \"name\" : \"Viral 23\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -144,7 +153,7 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{url_dev}}/v1/api/topics/5089296d-b24b-40a5-b17a-75a983a3430c",
+              "raw": "{{url_dev}}/v1/api/topics/1c69230b-d098-4cf7-a826-04c3917fc126",
               "host": [],
               "path": [],
               "query": [],
@@ -174,7 +183,7 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{url_dev}}/v1/api/topics/5089296d-b24b-40a5-b17a-75a983a3430c",
+              "raw": "{{url_dev}}/v1/api/topics/1c69230b-d098-4cf7-a826-04c3917fc126",
               "host": [],
               "path": [],
               "query": [],
@@ -198,7 +207,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{url_dev}}/v1/api/topics/72207b9a-6279-4952-bcc4-d37e0d825fd0",
+              "raw": "{{url_dev}}/v1/api/topics/1c69230b-d098-4cf7-a826-04c3917fc126",
               "host": [],
               "path": [],
               "query": [],
@@ -216,7 +225,7 @@
   "variable": [
     {
       "key": "url_dev",
-      "value": "",
+      "value": "http://localhost:3333",
       "type": "default"
     }
   ]

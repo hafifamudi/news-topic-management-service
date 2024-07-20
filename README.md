@@ -54,7 +54,8 @@
    3. Then you can use this API Service
 3. Run the seeder to initiate the dummy data
    1. Run this in terminal `make seed`
-4. You can hit the Base URL of this API Service 
+4. If you want to run all the unit test, then you can run the `make run-test` command in the terminal
+5. You can hit the Base URL of this API Service 
    1. `http://localhost:3333/v1/api/news`
    2. `http://localhost:3333/v1/api/topic`
 
