@@ -52,7 +52,9 @@
    1. Install Docker first
    2. In the root path of this project, run `docker compose up -d`
    3. Then you can use this API Service
-3. You can hit the Base URL of this API Service 
+3. Run the seeder to initiate the dummy data
+   1. Run this in terminal `make seed`
+4. You can hit the Base URL of this API Service 
    1. `http://localhost:3333/v1/api/news`
    2. `http://localhost:3333/v1/api/topic`
 
