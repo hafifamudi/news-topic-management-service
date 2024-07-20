@@ -34,16 +34,6 @@ func main() {
 	var cfg config.Config
 	appEnv := os.Getenv("APP_ENV")
 
-	if appEnv == "DEVELOPMENT_LOCAL" {
-		err := godotenv.Load()
-		if err != nil {
-			log.Fatal("Error loading .env file")
-		}
-
-		/**  Load configuration */
-		cfg = config.Instance()
-	}
-
 	if appEnv == "DEVELOPMENT_DOCKER" {
 		/**  Load configuration */
 		cfg = config.Config{
@@ -60,6 +50,14 @@ func main() {
 				Database: os.Getenv("DB_DATABASE"),
 			},
 		}
+	} else {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+
+		/**  Load configuration */
+		cfg = config.Instance()
 	}
 
 	/** Close database if application exit */

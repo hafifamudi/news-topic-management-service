@@ -6,13 +6,14 @@ services:
     ports:
       - "3333:3333"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DB_CLIENT: postgresql
       DB_USERNAME: postgres
       DB_PASSWORD: rootuser
       DB_HOST: db
-      DB_PORT: 5440
+      DB_PORT: 5432
       DB_DATABASE: news_topic_management_service
       APP_ENV: DEVELOPMENT_DOCKER
       APP_NAME: NEWS_TOPIC_MANAGEMENT_SERVICE
@@ -27,10 +28,20 @@ services:
       POSTGRES_PASSWORD: rootuser
       POSTGRES_DB: news_topic_management_service
     ports:
-      - "5440:5440"
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  db-data:
