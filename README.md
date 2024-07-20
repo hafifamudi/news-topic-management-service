@@ -1,5 +1,7 @@
 ## News Topic Management Service API - v1.0.0.
 
+![News Topic Management Service - Dev CI](https://github.com/hafifamudi/news-topic-management-service/actions/workflows/dev.yml/badge.svg)
+
 #### This a Restful API that contains several Endpoints for manage News and Topic
 
 ## About the Project
