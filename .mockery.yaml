@@ -1,0 +1,8 @@
+all: True
+dir: "mocks"
+outpkg: "mocks"
+packages:
+  github.com/hafifamudi/news-topic-management-service/internal/core/news/repository:
+  github.com/hafifamudi/news-topic-management-service/internal/core/news/service:
+  github.com/hafifamudi/news-topic-management-service/internal/core/topic/service:
+  github.com/hafifamudi/news-topic-management-service/internal/core/topic/repository:

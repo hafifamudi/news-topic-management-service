@@ -1,0 +1,42 @@
+name: News Topic Management Service - Dev CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: |
+          go test -v github.com/hafifamudi/news-topic-management-service/internal/core/news/controller \
+          github.com/hafifamudi/news-topic-management-service/internal/core/news/repository \
+          github.com/hafifamudi/news-topic-management-service/internal/core/news/service \
+          github.com/hafifamudi/news-topic-management-service/internal/core/topic/controller \
+          github.com/hafifamudi/news-topic-management-service/internal/core/topic/repository \
+          github.com/hafifamudi/news-topic-management-service/internal/core/topic/service

@@ -1,0 +1,19 @@
+# GoLand IDE
+.idea/
+
+# Environment variables
+.env
+
+# Golang specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Dependency directories
+vendor/
+Godeps/
+tmp/

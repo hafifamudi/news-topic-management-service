@@ -1,0 +1,45 @@
+# Binaries
+/bin
+/build
+/dist
+
+# Vendor directory, if you are using vendoring for dependencies
+/vendor
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Dependency directories created by Go tools
+/pkg
+/.go
+/.cache
+/.local
+
+# GoLand project files
+.idea/
+
+# Go modules cache
+$GOPATH/pkg/mod
+
+# Output of `go test` command
+/testdata
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Configuration files
+*.env
+
+# Git files
+.git
+.gitignore
+
+# Editor files
+.vscode
+*.swp
+
+# Docker-related files
+Dockerfile
+.dockerignore

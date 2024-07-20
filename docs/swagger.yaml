@@ -1,0 +1,288 @@
+basePath: /v1/api
+definitions:
+  request.CreateNewsRequest:
+    properties:
+      content:
+        type: string
+      status:
+        enum:
+        - draft
+        - published
+        type: string
+      title:
+        type: string
+      topic_ids:
+        items:
+          type: string
+        type: array
+    required:
+    - content
+    - status
+    - title
+    type: object
+  request.CreateTopicRequest:
+    properties:
+      name:
+        minLength: 3
+        type: string
+    required:
+    - name
+    type: object
+  request.UpdateNewsRequest:
+    properties:
+      content:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      topic_ids:
+        items:
+          type: string
+        type: array
+    type: object
+  request.UpdateTopicRequest:
+    properties:
+      name:
+        minLength: 3
+        type: string
+    required:
+    - name
+    type: object
+  resource.NewsResource:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  resource.TopicResource:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.SuccessWithMessageResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
+info:
+  contact:
+    email: hafifcyber@gmail.com
+    name: Hafif Nur Muhammad
+    url: https://hafifamudi.github.io/
+  description: This News Topic Management service API.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: News Topic Management API
+  version: "1.0"
+paths:
+  /news:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all News items
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessWithMessageResponse'
+      tags:
+      - News
+    post:
+      consumes:
+      - application/json
+      description: Create a new News with the provided information
+      parameters:
+      - description: Create News
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateNewsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/resource.NewsResource'
+              type: object
+      tags:
+      - News
+  /news/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a News with the provided News ID
+      parameters:
+      - description: News ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/resource.NewsResource'
+              type: object
+      tags:
+      - News
+    put:
+      consumes:
+      - application/json
+      description: Update an existing News with the provided information
+      parameters:
+      - description: News ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update News
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateNewsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/resource.NewsResource'
+              type: object
+      tags:
+      - News
+  /topics:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all Topics
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessWithMessageResponse'
+      tags:
+      - Topics
+    post:
+      consumes:
+      - application/json
+      description: Create a new Topic with the provided information
+      parameters:
+      - description: Create Topic
+        in: body
+        name: topic
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateTopicRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/resource.TopicResource'
+              type: object
+      tags:
+      - Topics
+  /topics/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Topic with the provided Topic ID
+      parameters:
+      - description: Topic ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/resource.TopicResource'
+              type: object
+      tags:
+      - Topics
+    put:
+      consumes:
+      - application/json
+      description: Update an existing Topic with the provided information
+      parameters:
+      - description: Topic ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update Topic
+        in: body
+        name: topic
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateTopicRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessWithMessageResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/resource.TopicResource'
+              type: object
+      tags:
+      - Topics
+swagger: "2.0"

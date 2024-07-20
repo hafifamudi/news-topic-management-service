@@ -1,0 +1,22 @@
+Table news {
+  id int [pk, increment]
+  title varchar(255)
+  content text
+  status varchar(50) // 'draft', 'deleted', 'published'
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table topic {
+  id int [pk, increment]
+  name varchar(255)
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table news_topic {
+  id int [pk, increment]
+  news_id int [ref: > news.id]
+  topic_id int [ref: > topic.id]
+}
+

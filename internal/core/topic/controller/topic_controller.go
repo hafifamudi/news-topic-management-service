@@ -1,0 +1,210 @@
+package controller
+
+import (
+	"encoding/json"
+	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/model"
+	errorRequest "github.com/hafifamudi/news-topic-management-service/pkg/utils/errors"
+	errorResponse "github.com/hafifamudi/news-topic-management-service/pkg/utils/validations"
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/request"
+	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/resource"
+	"github.com/hafifamudi/news-topic-management-service/internal/core/topic/service"
+	"github.com/hafifamudi/news-topic-management-service/pkg/utils/response"
+)
+
+type TopicController interface {
+	ListTopic(w http.ResponseWriter, r *http.Request)
+	DetailTopic(w http.ResponseWriter, r *http.Request)
+	CreateTopic(w http.ResponseWriter, r *http.Request)
+	UpdateTopic(w http.ResponseWriter, r *http.Request)
+	DeleteTopic(w http.ResponseWriter, r *http.Request)
+}
+
+type topicController struct {
+	service service.TopicService
+}
+
+func NewTopicController(service service.TopicService) TopicController {
+	return &topicController{
+		service: service,
+	}
+}
+
+func Topic() TopicController {
+	return NewTopicController(service.Topic())
+}
+
+// ListTopic @Summary List all topics
+// @Description List all topics with related topic
+// @Tags Topics
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} response.SuccessWithMessageResponse{data=[]resource.TopicResource}
+// @Router /v1/api/topics [get]
+func (c *topicController) ListTopic(w http.ResponseWriter, r *http.Request) {
+	topicList, err := c.service.GetAll()
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Error fetching topics")
+		return
+	}
+
+	var topicResources []resource.TopicResource
+	for _, topic := range topicList {
+		preloadedTopic, err := c.service.Preload(&topic)
+		if err != nil {
+			response.Error(w, http.StatusInternalServerError, "Error fetching related topic")
+			return
+		}
+		topicResources = append(topicResources, resource.NewTopicResource(*preloadedTopic))
+	}
+
+	response.SuccessWithMessage(w, "List of topics retrieved successfully", topicResources)
+}
+
+// DetailTopic @Summary Detail data of a Topic
+// @Description Detail Topic with the provided information
+// @Tags News
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.NewTopicResource}
+// @Router /topic/{id} [get]
+func (c *topicController) DetailTopic(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid News ID")
+		return
+	}
+
+	defer r.Body.Close()
+
+	topic, err := c.service.Find(id)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if topic.ID == uuid.Nil {
+		response.Error(w, http.StatusNotFound, "News not found")
+		return
+	}
+
+	var NewsResources []resource.TopicResource
+	preloadedNews, err := c.service.Preload((*model.Topic)(topic))
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	NewsResources = append(NewsResources, resource.NewTopicResource(*preloadedNews))
+
+	response.SuccessWithMessage(w, "News updated", resource.NewTopicResource(model.Topic(*topic)))
+}
+
+// CreateTopic @Summary Create a new Topic
+// @Description Create a new Topic with the provided information
+// @Tags Topics
+// @Accept json
+// @Produce json
+// @Param topic body request.CreateTopicRequest true "Create Topic"
+// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.TopicResource}
+// @Router /topics [post]
+func (c *topicController) CreateTopic(w http.ResponseWriter, r *http.Request) {
+	var topicRequest request.CreateTopicRequest
+	if err := json.NewDecoder(r.Body).Decode(&topicRequest); err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+
+	if err := errorRequest.ValidateStruct(topicRequest); err != nil {
+		errorResponse.HandleHttpRequestValidationError(w, err)
+		return
+	}
+
+	defer r.Body.Close()
+
+	topic, err := c.service.Create(topicRequest)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response.SuccessWithMessage(w, "Topic created", resource.NewTopicResource(*topic))
+}
+
+// UpdateTopic @Summary Update an existing Topic
+// @Description Update an existing Topic with the provided information
+// @Tags Topics
+// @Accept json
+// @Produce json
+// @Param id path string true "Topic ID" Format(uuid)
+// @Param topic body request.UpdateTopicRequest true "Update Topic"
+// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.TopicResource}
+// @Router /topics/{id} [put]
+func (c *topicController) UpdateTopic(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid Topic ID")
+		return
+	}
+
+	var topicRequest request.UpdateTopicRequest
+	if err := json.NewDecoder(r.Body).Decode(&topicRequest); err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+
+	if err := errorRequest.ValidateStruct(topicRequest); err != nil {
+		errorResponse.HandleHttpRequestValidationError(w, err)
+		return
+	}
+
+	defer r.Body.Close()
+
+	topic, err := c.service.Find(id)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Error fetching Topic")
+		return
+	}
+
+	if topic.ID == uuid.Nil {
+		response.Error(w, http.StatusNotFound, "Topic not found")
+		return
+	}
+
+	topic, err = c.service.Update(topicRequest, id)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response.SuccessWithMessage(w, "Topic updated", resource.NewTopicResource((model.Topic)(*topic)))
+}
+
+// DeleteTopic @Summary Delete a Topic
+// @Description Delete a Topic with the provided Topic ID
+// @Tags Topics
+// @Accept json
+// @Produce json
+// @Param id path string true "Topic ID" Format(uuid)
+// @Success 200 {object} response.SuccessWithMessageResponse{data=resource.TopicResource}
+// @Router /topics/{id} [delete]
+func (c *topicController) DeleteTopic(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid Topic ID")
+		return
+	}
+
+	deletedTopic, err := c.service.Delete(id)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Error deleting Topic")
+		return
+	}
+
+	response.SuccessWithMessage(w, "Topic deleted", resource.NewTopicResource(*deletedTopic))
+}
