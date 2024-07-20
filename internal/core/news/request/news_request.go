@@ -3,7 +3,7 @@ package request
 type CreateNewsRequest struct {
 	Title    string   `json:"title" validate:"required"`
 	Content  string   `json:"content" validate:"required"`
-	Status   string   `json:"status" validate:"required,oneof=draft published"`
+	Status   string   `json:"status" validate:"required,oneof=draft deleted published"`
 	TopicIDs []string `json:"topic_ids"`
 }
 
