@@ -7,6 +7,15 @@ services:
       - "3333:3333"
     depends_on:
       - db
+    environment:
+      DB_CLIENT: postgresql
+      DB_USERNAME: postgres
+      DB_PASSWORD: rootuser
+      DB_HOST: db
+      DB_PORT: 5440
+      DB_DATABASE: news_topic_management_service
+      APP_ENV: DEVELOPMENT_DOCKER
+      APP_NAME: NEWS_TOPIC_MANAGEMENT_SERVICE
     networks:
       - app-network
 
@@ -18,7 +27,7 @@ services:
       POSTGRES_PASSWORD: rootuser
       POSTGRES_DB: news_topic_management_service
     ports:
-      - "5432:5432"
+      - "5440:5440"
     networks:
       - app-network
 

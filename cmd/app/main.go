@@ -11,6 +11,7 @@ import (
 	newsRoute "news-topic-management-service/internal/core/news/route"
 	topicModel "news-topic-management-service/internal/core/topic/model"
 	topicRoute "news-topic-management-service/internal/core/topic/route"
+	"os"
 
 	"log"
 	"net/http"
@@ -29,14 +30,37 @@ import (
 
 // @BasePath /v1/api
 func main() {
-	/**  Load environment variables */
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	/**  Specify and Load environment variables */
+	var cfg config.Config
+	appEnv := os.Getenv("APP_ENV")
+
+	if appEnv == "DEVELOPMENT_LOCAL" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+
+		/**  Load configuration */
+		cfg = config.Instance()
 	}
 
-	/**  Load configuration */
-	cfg := config.Instance()
+	if appEnv == "DEVELOPMENT_DOCKER" {
+		/**  Load configuration */
+		cfg = config.Config{
+			App: config.App{
+				Name: os.Getenv("APP_NAME"),
+				Env:  os.Getenv("APP_ENV"),
+			},
+			DB: config.DBConfig{
+				Client:   os.Getenv("DB_CLIENT"),
+				Host:     os.Getenv("DB_HOST"),
+				Username: os.Getenv("DB_USERNAME"),
+				Password: os.Getenv("DB_PASSWORD"),
+				Port:     os.Getenv("DB_PORT"),
+				Database: os.Getenv("DB_DATABASE"),
+			},
+		}
+	}
 
 	/** Close database if application exit */
 	defer db.CloseDB()
