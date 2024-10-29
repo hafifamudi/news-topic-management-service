@@ -6,8 +6,11 @@ import (
 	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/db"
 	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/opentelemetry"
 	"github.com/joho/godotenv"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/riandyrn/otelchi"
+	"github.com/sirupsen/logrus"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"github.com/yarlson/chiprom"
 	"news-topic-management-service/config"
 	_ "news-topic-management-service/docs"
 	newsModel "news-topic-management-service/internal/core/news/model"
@@ -15,6 +18,7 @@ import (
 	topicModel "news-topic-management-service/internal/core/topic/model"
 	topicRoute "news-topic-management-service/internal/core/topic/route"
 	"os"
+	"path/filepath"
 
 	"log"
 	"net/http"
@@ -96,13 +100,36 @@ func main() {
 	}
 	defer cleanup(context.Background())
 
+	/** Init Logger */
+	baseDir, err := os.Getwd()
+	if err != nil {
+		logrus.Fatalf("failed to get current working directory: %v", err)
+	}
+
+	logPath := filepath.Join(baseDir, "logs", "app.log")
+	if err != nil {
+		logrus.Fatalf("failed to open log file: %v", err)
+	}
+
+	logFile, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		logrus.Fatalf("failed to open log file: %v", err)
+	}
+
+	logrus.SetOutput(logFile)
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+
 	/** Register routes */
 	app := chi.NewRouter()
-	app.Use(otelchi.Middleware("news-topic-app"))
+	app.Use(otelchi.Middleware("news-topic-app", otelchi.WithChiRoutes(app)))
+	app.Use(chiprom.NewMiddleware("news-topic-app"))
 
 	app.Mount("/swagger", httpSwagger.WrapHandler)
 
-	// Create a sub-router for versioning
+	/** Expose Metrics based on promHTTP */
+	app.Handle("/metrics", promhttp.Handler())
+
+	/** Create a sub-router for versioning */
 	v1Router := chi.NewRouter()
 	topicRoute.Register(v1Router)
 	newsRoute.Register(v1Router)

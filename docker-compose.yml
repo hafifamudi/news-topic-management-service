@@ -19,6 +19,11 @@ services:
       APP_NAME: NEWS_TOPIC_MANAGEMENT_SERVICE
     networks:
       - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   db:
     image: postgres:13
@@ -39,46 +44,50 @@ services:
       timeout: 5s
       retries: 5
 
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    networks:
-      - app-network
-
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    networks:
-      - app-network
-
-  jaeger:
-    image: jaegertracing/all-in-one:1.56
-    ports:
-      - "16686:16686"  # Jaeger UI
-      - "6831:6831/udp"  # For receiving traces from clients
-      - "4317:4317"  # For OTLP gRPC protocol (OpenTelemetry)
-      - "4318:4318"  # For OTLP HTTP protocol (OpenTelemetry)
-    networks:
-      - app-network
-
   loki:
     image: grafana/loki:latest
     ports:
       - "3100:3100"
     networks:
       - app-network
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki-config.yml:/etc/loki/local-config.yaml
+      - ./loki-data:/loki  # Mount a writable directory for Loki's data
 
   promtail:
     image: grafana/promtail:latest
+    networks:
+      - app-network
     volumes:
-      - /var/log:/var/log
-    command: -config.file=/etc/promtail/promtail-config.yml
+      - ./promtail-config.yml:/etc/promtail/promtail-config.yml
+      - ./logs:/var/log # Ensure this path matches where your app writes logs
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
+    volumes:
+      - ./prometheus-config.yml:/etc/prometheus/prometheus-config.yml
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "14268:14268"
+      - "14250:14250"
+      - "16686:16686"
+      - "4318:4318"
     networks:
       - app-network
 
@@ -88,4 +97,4 @@ networks:
 
 volumes:
   db-data:
-
+  loki-data:
