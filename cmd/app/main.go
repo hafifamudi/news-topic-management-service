@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"github.com/go-chi/chi/v5"
-	"github.com/hafifamudi/news-topic-management-service/news-topic-management-service/pkg/infrastructure/opentelemetry"
 	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/db"
+	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/opentelemetry"
 	"github.com/joho/godotenv"
 	"github.com/riandyrn/otelchi"
 	httpSwagger "github.com/swaggo/http-swagger"

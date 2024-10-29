@@ -3,10 +3,10 @@ package opentelemetry
 import (
 	"context"
 	"fmt"
+	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/tracer/jeager"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/prometheus"
 	"go.opentelemetry.io/otel/sdk/metric"
-	"news-topic-management-service/pkg/infrastructure/tracer/jeager"
 )
 
 func InitOpenTelemetry() (func(context.Context) error, error) {

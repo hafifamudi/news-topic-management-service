@@ -1,12 +1,14 @@
-module github.com/hafifamudi/news-topic-management-service
+module news-topic-management-service
 
-go 1.21
+go 1.22.0
+
+toolchain go1.23.2
 
 require (
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/google/uuid v1.6.0
-	github.com/hafifamudi/news-topic-management-service v1.0.0
+	github.com/hafifamudi/news-topic-management-service v1.1.1
 	github.com/jinzhu/configor v1.2.2
 	github.com/joho/godotenv v1.5.1
 	github.com/riandyrn/otelchi v0.10.1

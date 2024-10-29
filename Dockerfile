@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine AS build
+FROM golang:1.22-alpine AS build
 
 # Update and install git for fetch package
 RUN apk update && apk add --no-cache git
