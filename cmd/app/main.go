@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"github.com/go-chi/chi/v5"
 	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/db"
 	"github.com/joho/godotenv"
+	"github.com/riandyrn/otelchi"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"news-topic-management-service/config"
 	_ "news-topic-management-service/docs"
@@ -11,6 +13,7 @@ import (
 	newsRoute "news-topic-management-service/internal/core/news/route"
 	topicModel "news-topic-management-service/internal/core/topic/model"
 	topicRoute "news-topic-management-service/internal/core/topic/route"
+	"news-topic-management-service/pkg/infrastructure/opentelemetry"
 	"os"
 
 	"log"
@@ -78,13 +81,24 @@ func main() {
 	}
 
 	/** Migrate the schema */
-	dbInstance.AutoMigrate(
+	err = dbInstance.AutoMigrate(
 		&topicModel.Topic{},
 		&newsModel.News{},
 	)
+	if err != nil {
+		return
+	}
+
+	/** Start Software Instrumentation */
+	cleanup, err := opentelemetry.InitOpenTelemetry()
+	if err != nil {
+		log.Fatalf("failed to initialize OpenTelemetry: %v", err)
+	}
+	defer cleanup(context.Background())
 
 	/** Register routes */
 	app := chi.NewRouter()
+	app.Use(otelchi.Middleware("news-topic-app"))
 
 	app.Mount("/swagger", httpSwagger.WrapHandler)
 

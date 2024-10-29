@@ -1,9 +1,12 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	errorRequest "github.com/hafifamudi/news-topic-management-service/pkg/utils/errors"
 	errorResponse "github.com/hafifamudi/news-topic-management-service/pkg/utils/validations"
+	"go.opentelemetry.io/otel"
+	"io"
 	"net/http"
 	"news-topic-management-service/internal/core/topic/model"
 
@@ -37,6 +40,8 @@ func Topic() TopicController {
 	return NewTopicController(service.Topic())
 }
 
+var tracer = otel.Tracer("github.com/Salaton/tracing/pkg/infrastructure/database/postgres")
+
 // ListTopic @Summary List all topics
 // @Description List all topics with related topic
 // @Tags Topics
@@ -45,7 +50,10 @@ func Topic() TopicController {
 // @Success 200 {object} common.SuccessWithMessageResponse{data=[]common.TopicResource}
 // @Router /topics [get]
 func (c *topicController) ListTopic(w http.ResponseWriter, r *http.Request) {
-	topicList, err := c.service.GetAll()
+	ctx, span := tracer.Start(context.Background(), "topicController-ListTopic")
+	defer span.End()
+
+	topicList, err := c.service.GetAll(ctx)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "Error fetching topics")
 		return
@@ -53,7 +61,7 @@ func (c *topicController) ListTopic(w http.ResponseWriter, r *http.Request) {
 
 	var topicResources []resource.TopicResource
 	for _, topic := range topicList {
-		preloadedTopic, err := c.service.Preload(&topic)
+		preloadedTopic, err := c.service.Preload(ctx, &topic)
 		if err != nil {
 			response.Error(w, http.StatusInternalServerError, "Error fetching related topic")
 			return
@@ -72,6 +80,9 @@ func (c *topicController) ListTopic(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.TopicResource}
 // @Router /topics/{id} [get]
 func (c *topicController) DetailTopic(w http.ResponseWriter, r *http.Request) {
+	ctx, span := tracer.Start(context.Background(), "topicController-DetailTopic")
+	defer span.End()
+
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
@@ -79,9 +90,14 @@ func (c *topicController) DetailTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer r.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
 
-	topic, err := c.service.Find(id)
+		}
+	}(r.Body)
+
+	topic, err := c.service.Find(ctx, id)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -93,7 +109,7 @@ func (c *topicController) DetailTopic(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var NewsResources []resource.TopicResource
-	preloadedNews, err := c.service.Preload((*model.Topic)(topic))
+	preloadedNews, err := c.service.Preload(ctx, (*model.Topic)(topic))
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -112,6 +128,9 @@ func (c *topicController) DetailTopic(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.TopicResource}
 // @Router /topics [post]
 func (c *topicController) CreateTopic(w http.ResponseWriter, r *http.Request) {
+	ctx, span := tracer.Start(context.Background(), "topicController-CreateTopic")
+	defer span.End()
+
 	var topicRequest request.CreateTopicRequest
 	if err := json.NewDecoder(r.Body).Decode(&topicRequest); err != nil {
 		response.Error(w, http.StatusBadRequest, "Invalid request payload")
@@ -123,9 +142,14 @@ func (c *topicController) CreateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer r.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
 
-	topic, err := c.service.Create(topicRequest)
+		}
+	}(r.Body)
+
+	topic, err := c.service.Create(ctx, topicRequest)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -144,6 +168,9 @@ func (c *topicController) CreateTopic(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.TopicResource}
 // @Router /topics/{id} [put]
 func (c *topicController) UpdateTopic(w http.ResponseWriter, r *http.Request) {
+	ctx, span := tracer.Start(context.Background(), "topicController-UpdateTopic")
+	defer span.End()
+
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
@@ -162,9 +189,14 @@ func (c *topicController) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer r.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
 
-	topic, err := c.service.Find(id)
+		}
+	}(r.Body)
+
+	topic, err := c.service.Find(ctx, id)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "Error fetching Topic")
 		return
@@ -175,7 +207,7 @@ func (c *topicController) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	topic, err = c.service.Update(topicRequest, id)
+	topic, err = c.service.Update(ctx, topicRequest, id)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -193,6 +225,9 @@ func (c *topicController) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.TopicResource}
 // @Router /topics/{id} [delete]
 func (c *topicController) DeleteTopic(w http.ResponseWriter, r *http.Request) {
+	ctx, span := tracer.Start(context.Background(), "topicController-DeleteTopic")
+	defer span.End()
+
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
@@ -200,7 +235,7 @@ func (c *topicController) DeleteTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	deletedTopic, err := c.service.Delete(id)
+	deletedTopic, err := c.service.Delete(ctx, id)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "Error deleting Topic")
 		return

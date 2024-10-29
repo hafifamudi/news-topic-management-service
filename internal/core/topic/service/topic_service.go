@@ -1,7 +1,9 @@
 package service
 
 import (
+	"context"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel"
 	"news-topic-management-service/internal/core/topic/model"
 	topicRepo "news-topic-management-service/internal/core/topic/repository"
 	"news-topic-management-service/internal/core/topic/request"
@@ -9,12 +11,12 @@ import (
 )
 
 type TopicService interface {
-	GetAll() ([]model.Topic, error)
-	Create(req request.CreateTopicRequest) (*model.Topic, error)
-	Update(req request.UpdateTopicRequest, topicID uuid.UUID) (*common.Topic, error)
-	Find(topicID uuid.UUID) (*common.Topic, error)
-	Delete(topicID uuid.UUID) (*model.Topic, error)
-	Preload(topic *model.Topic) (*model.Topic, error)
+	GetAll(ctx context.Context) ([]model.Topic, error)
+	Create(ctx context.Context, req request.CreateTopicRequest) (*model.Topic, error)
+	Update(ctx context.Context, req request.UpdateTopicRequest, topicID uuid.UUID) (*common.Topic, error)
+	Find(ctx context.Context, topicID uuid.UUID) (*common.Topic, error)
+	Delete(ctx context.Context, topicID uuid.UUID) (*model.Topic, error)
+	Preload(ctx context.Context, topic *model.Topic) (*model.Topic, error)
 }
 
 type topicService struct {
@@ -35,12 +37,17 @@ func Topic() TopicService {
 	)
 }
 
-func (n topicService) Create(req request.CreateTopicRequest) (*model.Topic, error) {
+var tracer = otel.Tracer("github.com/Salaton/tracing/pkg/infrastructure/database/postgres")
+
+func (n topicService) Create(ctx context.Context, req request.CreateTopicRequest) (*model.Topic, error) {
+	ctxT, span := tracer.Start(ctx, "topicService-Create")
+	defer span.End()
+
 	topic := &model.Topic{
 		Name: req.Name,
 	}
 
-	createdTopic, err := n.TopicRepository.Create(topic)
+	createdTopic, err := n.TopicRepository.Create(ctxT, topic)
 	if err != nil {
 		return nil, err
 	}
@@ -48,14 +55,17 @@ func (n topicService) Create(req request.CreateTopicRequest) (*model.Topic, erro
 	return createdTopic, nil
 }
 
-func (n topicService) Update(req request.UpdateTopicRequest, topicID uuid.UUID) (*common.Topic, error) {
-	existingTopic, err := n.TopicRepository.Find(topicID)
+func (n topicService) Update(ctx context.Context, req request.UpdateTopicRequest, topicID uuid.UUID) (*common.Topic, error) {
+	ctxT, span := tracer.Start(ctx, "topicService-Update")
+	defer span.End()
+
+	existingTopic, err := n.TopicRepository.Find(ctxT, topicID)
 	if err != nil {
 		return nil, err
 	}
 
 	existingTopic.Name = req.Name
-	updatedTopic, err := n.TopicRepository.Update(topicID, existingTopic)
+	updatedTopic, err := n.TopicRepository.Update(ctxT, topicID, existingTopic)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +73,11 @@ func (n topicService) Update(req request.UpdateTopicRequest, topicID uuid.UUID) 
 	return updatedTopic, nil
 }
 
-func (n topicService) Find(topicID uuid.UUID) (*common.Topic, error) {
-	topic, err := n.TopicRepository.Find(topicID)
+func (n topicService) Find(ctx context.Context, topicID uuid.UUID) (*common.Topic, error) {
+	ctxT, span := tracer.Start(ctx, "topicService-Find")
+	defer span.End()
+
+	topic, err := n.TopicRepository.Find(ctxT, topicID)
 	if err != nil {
 		return nil, err
 	}
@@ -72,8 +85,11 @@ func (n topicService) Find(topicID uuid.UUID) (*common.Topic, error) {
 	return topic, nil
 }
 
-func (n topicService) Preload(topic *model.Topic) (*model.Topic, error) {
-	preloadedTopic, err := n.TopicRepository.Preload(topic)
+func (n topicService) Preload(ctx context.Context, topic *model.Topic) (*model.Topic, error) {
+	ctxT, span := tracer.Start(ctx, "topicService-Preload")
+	defer span.End()
+
+	preloadedTopic, err := n.TopicRepository.Preload(ctxT, topic)
 	if err != nil {
 		return nil, err
 	}
@@ -81,13 +97,16 @@ func (n topicService) Preload(topic *model.Topic) (*model.Topic, error) {
 	return preloadedTopic, nil
 }
 
-func (n topicService) Delete(topicID uuid.UUID) (*model.Topic, error) {
-	_, err := n.TopicRepository.Find(topicID)
+func (n topicService) Delete(ctx context.Context, topicID uuid.UUID) (*model.Topic, error) {
+	ctxT, span := tracer.Start(ctx, "topicService-Delete")
+	defer span.End()
+
+	_, err := n.TopicRepository.Find(ctxT, topicID)
 	if err != nil {
 		return nil, err
 	}
 
-	deletedTopic, err := n.TopicRepository.Delete(topicID)
+	deletedTopic, err := n.TopicRepository.Delete(ctxT, topicID)
 	if err != nil {
 		return nil, err
 	}
@@ -95,8 +114,11 @@ func (n topicService) Delete(topicID uuid.UUID) (*model.Topic, error) {
 	return deletedTopic, nil
 }
 
-func (n topicService) GetAll() ([]model.Topic, error) {
-	data, err := n.TopicRepository.GetAll()
+func (n topicService) GetAll(ctx context.Context) ([]model.Topic, error) {
+	ctxT, span := tracer.Start(ctx, "topicService-GetAll")
+	defer span.End()
+
+	data, err := n.TopicRepository.GetAll(ctxT)
 	if err != nil {
 		return nil, err
 	}

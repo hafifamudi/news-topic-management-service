@@ -1,12 +1,15 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	errorRequest "github.com/hafifamudi/news-topic-management-service/pkg/utils/errors"
 	"github.com/hafifamudi/news-topic-management-service/pkg/utils/response"
 	errorResponse "github.com/hafifamudi/news-topic-management-service/pkg/utils/validations"
+	"go.opentelemetry.io/otel"
+	"io"
 	"net/http"
 	"news-topic-management-service/internal/core/news/request"
 	"news-topic-management-service/internal/core/news/resource"
@@ -44,6 +47,8 @@ func News() NewsController {
 	return NewNewsController(service.News())
 }
 
+var tracer = otel.Tracer("github.com/Salaton/tracing/pkg/infrastructure/database/postgres")
+
 // ListNews @Summary Retrieve all News
 // @Description Retrieve all News items with optional filtering by status or topic
 // @Tags News
@@ -54,6 +59,9 @@ func News() NewsController {
 // @Success 200 {object} common.SuccessWithMessageResponse{data=[]common.NewsResource}
 // @Router /news [get]
 func (c *newsController) ListNews(w http.ResponseWriter, r *http.Request) {
+	ctxT, span := tracer.Start(context.Background(), "newsController-ListNews")
+	defer span.End()
+
 	var status *string
 	if s := r.URL.Query().Get("status"); s != "" {
 		status = &s
@@ -69,7 +77,7 @@ func (c *newsController) ListNews(w http.ResponseWriter, r *http.Request) {
 		topicID = &id
 	}
 
-	newsList, err := c.service.GetAll(status, topicID)
+	newsList, err := c.service.GetAll(ctxT, status, topicID)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "Error fetching News")
 		return
@@ -77,7 +85,7 @@ func (c *newsController) ListNews(w http.ResponseWriter, r *http.Request) {
 
 	var newsResources []resource.NewsResource
 	for _, topic := range newsList {
-		preloadedNews, err := c.service.Preload(&topic)
+		preloadedNews, err := c.service.Preload(ctxT, &topic)
 		if err != nil {
 			response.Error(w, http.StatusInternalServerError, "Error fetching related news")
 			return
@@ -96,6 +104,9 @@ func (c *newsController) ListNews(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.NewsResource}
 // @Router /news/{id} [get]
 func (c *newsController) DetailNews(w http.ResponseWriter, r *http.Request) {
+	ctxT, span := tracer.Start(context.Background(), "newsController-DetailNews")
+	defer span.End()
+
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
@@ -103,9 +114,14 @@ func (c *newsController) DetailNews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer r.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
 
-	news, err := c.service.Find(id)
+		}
+	}(r.Body)
+
+	news, err := c.service.Find(ctxT, id)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -117,7 +133,7 @@ func (c *newsController) DetailNews(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var newsResources []resource.NewsResource
-	preloadedNews, err := c.service.Preload(news)
+	preloadedNews, err := c.service.Preload(ctxT, news)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -136,6 +152,9 @@ func (c *newsController) DetailNews(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.NewsResource}
 // @Router /news [post]
 func (c *newsController) CreateNews(w http.ResponseWriter, r *http.Request) {
+	ctx, span := tracer.Start(context.Background(), "newsController-CreateNews")
+	defer span.End()
+
 	var newsRequest request.CreateNewsRequest
 	if err := json.NewDecoder(r.Body).Decode(&newsRequest); err != nil {
 		response.Error(w, http.StatusBadRequest, "Invalid request payload")
@@ -147,9 +166,14 @@ func (c *newsController) CreateNews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer r.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
 
-	news, err := c.service.Create(newsRequest)
+		}
+	}(r.Body)
+
+	news, err := c.service.Create(ctx, newsRequest)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -168,6 +192,9 @@ func (c *newsController) CreateNews(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.NewsResource}
 // @Router /news/{id} [put]
 func (c *newsController) UpdateNews(w http.ResponseWriter, r *http.Request) {
+	ctx, span := tracer.Start(context.Background(), "newsController-UpdateNews")
+	defer span.End()
+
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
@@ -186,9 +213,14 @@ func (c *newsController) UpdateNews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer r.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
 
-	news, err := c.service.Find(id)
+		}
+	}(r.Body)
+
+	news, err := c.service.Find(ctx, id)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -199,7 +231,7 @@ func (c *newsController) UpdateNews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	news, err = c.service.Update(newsRequest, id)
+	news, err = c.service.Update(ctx, newsRequest, id)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -217,6 +249,9 @@ func (c *newsController) UpdateNews(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} common.SuccessWithMessageResponse{data=common.NewsResource}
 // @Router /news/{id} [delete]
 func (c *newsController) DeleteNews(w http.ResponseWriter, r *http.Request) {
+	ctx, span := tracer.Start(context.Background(), "newsController-DeleteNews")
+	defer span.End()
+
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
@@ -224,7 +259,7 @@ func (c *newsController) DeleteNews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	deletedNews, err := c.service.Delete(id)
+	deletedNews, err := c.service.Delete(ctx, id)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return

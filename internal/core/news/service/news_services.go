@@ -1,7 +1,9 @@
 package service
 
 import (
+	"context"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel"
 	"news-topic-management-service/internal/core/news/model"
 	newsRepo "news-topic-management-service/internal/core/news/repository"
 	"news-topic-management-service/internal/core/news/request"
@@ -10,12 +12,12 @@ import (
 )
 
 type NewsService interface {
-	GetAll(status *string, topicID *uuid.UUID) ([]model.News, error)
-	Create(req request.CreateNewsRequest) (*model.News, error)
-	Update(req request.UpdateNewsRequest, newsID uuid.UUID) (*model.News, error)
-	Find(newsID uuid.UUID) (*model.News, error)
-	Delete(newsID uuid.UUID) (*model.News, error)
-	Preload(news *model.News) (*model.News, error)
+	GetAll(ctx context.Context, status *string, topicID *uuid.UUID) ([]model.News, error)
+	Create(ctx context.Context, req request.CreateNewsRequest) (*model.News, error)
+	Update(ctx context.Context, req request.UpdateNewsRequest, newsID uuid.UUID) (*model.News, error)
+	Find(ctx context.Context, newsID uuid.UUID) (*model.News, error)
+	Delete(ctx context.Context, newsID uuid.UUID) (*model.News, error)
+	Preload(ctx context.Context, news *model.News) (*model.News, error)
 }
 
 type newsService struct {
@@ -40,7 +42,12 @@ func News() NewsService {
 	)
 }
 
-func (n newsService) Create(req request.CreateNewsRequest) (*model.News, error) {
+var tracer = otel.Tracer("github.com/Salaton/tracing/pkg/infrastructure/database/postgres")
+
+func (n newsService) Create(ctx context.Context, req request.CreateNewsRequest) (*model.News, error) {
+	ctxT, span := tracer.Start(ctx, "newsService-ListTopic")
+	defer span.End()
+
 	news := &model.News{
 		Title:   req.Title,
 		Content: req.Content,
@@ -54,7 +61,7 @@ func (n newsService) Create(req request.CreateNewsRequest) (*model.News, error) 
 			return nil, err
 		}
 
-		topic, err := n.TopicRepository.Find(parsedTopicID)
+		topic, err := n.TopicRepository.Find(ctxT, parsedTopicID)
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +69,7 @@ func (n newsService) Create(req request.CreateNewsRequest) (*model.News, error) 
 		news.Topics = append(news.Topics, *topic)
 	}
 
-	createdNews, err := n.NewsRepository.Create(news)
+	createdNews, err := n.NewsRepository.Create(ctxT, news)
 	if err != nil {
 		return nil, err
 	}
@@ -70,8 +77,11 @@ func (n newsService) Create(req request.CreateNewsRequest) (*model.News, error) 
 	return createdNews, nil
 }
 
-func (n newsService) Update(req request.UpdateNewsRequest, newsID uuid.UUID) (*model.News, error) {
-	existingNews, err := n.NewsRepository.Find(newsID)
+func (n newsService) Update(ctx context.Context, req request.UpdateNewsRequest, newsID uuid.UUID) (*model.News, error) {
+	ctxT, span := tracer.Start(ctx, "newsService-ListTopic")
+	defer span.End()
+
+	existingNews, err := n.NewsRepository.Find(ctxT, newsID)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +98,7 @@ func (n newsService) Update(req request.UpdateNewsRequest, newsID uuid.UUID) (*m
 			return nil, err
 		}
 
-		topic, err := n.TopicRepository.Find(parsedTopicID)
+		topic, err := n.TopicRepository.Find(ctxT, parsedTopicID)
 		if err != nil {
 			return nil, err
 		}
@@ -96,7 +106,7 @@ func (n newsService) Update(req request.UpdateNewsRequest, newsID uuid.UUID) (*m
 		existingNews.Topics = append(existingNews.Topics, *topic)
 	}
 
-	updatedNews, err := n.NewsRepository.Update(newsID, existingNews)
+	updatedNews, err := n.NewsRepository.Update(ctxT, newsID, existingNews)
 	if err != nil {
 		return nil, err
 	}
@@ -104,8 +114,11 @@ func (n newsService) Update(req request.UpdateNewsRequest, newsID uuid.UUID) (*m
 	return updatedNews, nil
 }
 
-func (n newsService) Find(newsID uuid.UUID) (*model.News, error) {
-	news, err := n.NewsRepository.Find(newsID)
+func (n newsService) Find(ctx context.Context, newsID uuid.UUID) (*model.News, error) {
+	ctxT, span := tracer.Start(ctx, "newsService-ListTopic")
+	defer span.End()
+
+	news, err := n.NewsRepository.Find(ctxT, newsID)
 	if err != nil {
 		return nil, err
 	}
@@ -113,8 +126,11 @@ func (n newsService) Find(newsID uuid.UUID) (*model.News, error) {
 	return news, nil
 }
 
-func (n newsService) Preload(news *model.News) (*model.News, error) {
-	preloadedNews, err := n.NewsRepository.Preload(news)
+func (n newsService) Preload(ctx context.Context, news *model.News) (*model.News, error) {
+	ctxT, span := tracer.Start(ctx, "newsService-ListTopic")
+	defer span.End()
+
+	preloadedNews, err := n.NewsRepository.Preload(ctxT, news)
 	if err != nil {
 		return nil, err
 	}
@@ -122,15 +138,16 @@ func (n newsService) Preload(news *model.News) (*model.News, error) {
 	return preloadedNews, nil
 }
 
-func (n newsService) Delete(newsID uuid.UUID) (*model.News, error) {
-	// Find the news item to delete
-	_, err := n.NewsRepository.Find(newsID)
+func (n newsService) Delete(ctx context.Context, newsID uuid.UUID) (*model.News, error) {
+	ctxT, span := tracer.Start(ctx, "newsService-ListTopic")
+	defer span.End()
+
+	_, err := n.NewsRepository.Find(ctxT, newsID)
 	if err != nil {
 		return nil, err
 	}
 
-	// Delete the news item from the database
-	deletedNews, err := n.NewsRepository.Delete(newsID)
+	deletedNews, err := n.NewsRepository.Delete(ctxT, newsID)
 	if err != nil {
 		return nil, err
 	}
@@ -138,8 +155,11 @@ func (n newsService) Delete(newsID uuid.UUID) (*model.News, error) {
 	return deletedNews, nil
 }
 
-func (n newsService) GetAll(status *string, topicID *uuid.UUID) ([]model.News, error) {
-	data, err := n.NewsRepository.GetAll(status, topicID)
+func (n newsService) GetAll(ctx context.Context, status *string, topicID *uuid.UUID) ([]model.News, error) {
+	ctxT, span := tracer.Start(ctx, "newsService-ListTopic")
+	defer span.End()
+
+	data, err := n.NewsRepository.GetAll(ctxT, status, topicID)
 	if err != nil {
 		return nil, err
 	}
