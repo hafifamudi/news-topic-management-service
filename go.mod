@@ -1,4 +1,4 @@
-module news-topic-management-service
+module github.com/hafifamudi/news-topic-management-service
 
 go 1.21
 
