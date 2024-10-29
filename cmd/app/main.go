@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/go-chi/chi/v5"
+	"github.com/hafifamudi/news-topic-management-service/news-topic-management-service/pkg/infrastructure/opentelemetry"
 	"github.com/hafifamudi/news-topic-management-service/pkg/infrastructure/db"
 	"github.com/joho/godotenv"
 	"github.com/riandyrn/otelchi"
@@ -13,7 +14,6 @@ import (
 	newsRoute "news-topic-management-service/internal/core/news/route"
 	topicModel "news-topic-management-service/internal/core/topic/model"
 	topicRoute "news-topic-management-service/internal/core/topic/route"
-	"news-topic-management-service/pkg/infrastructure/opentelemetry"
 	"os"
 
 	"log"
