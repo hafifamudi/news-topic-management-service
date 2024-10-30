@@ -3,6 +3,7 @@ package jeager
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"go.opentelemetry.io/otel"
@@ -14,9 +15,11 @@ import (
 )
 
 func StartTracing() (*trace.TracerProvider, error) {
+	url := os.Getenv("JAEGER_URL")
 	exporter, err := otlptrace.New(
 		context.Background(),
 		otlptracehttp.NewClient(
+			otlptracehttp.WithEndpoint(url),
 			otlptracehttp.WithInsecure(),
 		),
 	)

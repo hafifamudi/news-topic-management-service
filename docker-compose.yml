@@ -17,6 +17,7 @@ services:
       DB_DATABASE: news_topic_management_service
       APP_ENV: DEVELOPMENT_DOCKER
       APP_NAME: NEWS_TOPIC_MANAGEMENT_SERVICE
+      JAEGER_URL: jaeger-collector:4318
     networks:
       - app-network
     logging:
@@ -57,6 +58,8 @@ services:
 
   promtail:
     image: grafana/promtail:latest
+    ports:
+      - "9080:9080"
     networks:
       - app-network
     volumes:
@@ -82,7 +85,7 @@ services:
   jaeger:
     image: jaegertracing/all-in-one:latest
     environment:
-      - COLLECTOR_OTLP_ENABLED=true
+      COLLECTOR_OTLP_ENABLED: true
     ports:
       - "16686:16686"
       - "4318:4318"
